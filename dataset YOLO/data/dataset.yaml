@@ -1,0 +1,5 @@
+train: ../train/images
+val: ../valid/images
+test: E:\labels2\YOLODataset/images/test/
+nc: 36
+names: ["R", "A", "H", "M", "7", "B", "L", "S", "5", "2", "P", "V", "U", "X", "8", "T", "N", "0", "4", "9", "I", "C", "Y", "D", "Q", "O", "Z", "1", "K", "W", "F", "E", "J", "6", "3", "G"]
