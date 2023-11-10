@@ -2,7 +2,7 @@ import cv2
 from ultralytics import YOLO
 
 modelPlates = YOLO('BestTrain/weights/plates/best.pt')
-modelLN = YOLO('BestTrain/weights/letters_numbers/bestFull30.pt')
+modelLN = YOLO('BestTrain/weights/letters_numbers/BestF.pt')
 
 cap = cv2.VideoCapture(0)
 ctexto = ""
@@ -24,21 +24,20 @@ while cap.isOpened():
         for box in boxes:
             # Verifica si el objeto box tiene un atributo xyxy
             if box is not None:
-                # Obtiene las coordenadas de la detección
-                b = box.xyxy[0]
-
-                # Detecta letras y números en la región de interés
-                resultsLN = modelLN(b, imgsz=640)
-                letras_numeros = resultsLN[0].plot()
-
-                cv2.imshow("Letters and Numbers", letras_numeros)
-            else:
-                # El objeto box no es una detección válida
-                x = y = w = h = 0
+                x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+                roi = frame[y1:y2, x1:x2]
+                resultletras = modelLN(roi, imgsz=640)
+                letras = resultletras[0].plot(conf=None)
+                h, w, _ = letras.shape
+                
+                frame[y1:y1 + h, x1:x1 + w] = letras
                 
         # Dibuja las placas detectadas en la imagen
-        placas = resultsPlates.plot()
-        cv2.imshow("Plates", placas)
+        placas = resultsPlates.plot(conf=None).astype('uint8')
+        h,w,_ = placas.shape
+        frame[:h, :w] = placas
+        
+        cv2.imshow("Resultados", placas)
 
         tecla = cv2.waitKey(1)
 
