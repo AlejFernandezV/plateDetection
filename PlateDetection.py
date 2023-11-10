@@ -23,14 +23,12 @@ while cap.isOpened():
 
         for box in boxes:
             # Verifica si el objeto box tiene un atributo xyxy
-            if box.valid:
+            if box is not None:
                 # Obtiene las coordenadas de la detección
-                x, y, w, h = box.xyxy[:4]
+                b = box.xyxy[0]
 
-                roi = frame[y:h, x:w]
-
-                # Detecta letras y números en la región de interés (ROI)
-                resultsLN = modelLN(roi, imgsz=640)
+                # Detecta letras y números en la región de interés
+                resultsLN = modelLN(b, imgsz=640)
                 letras_numeros = resultsLN[0].plot()
 
                 cv2.imshow("Letters and Numbers", letras_numeros)
