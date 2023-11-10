@@ -14,18 +14,32 @@ while cap.isOpened():
     if success:
 
         resultsPlates = modelPlates(frame, imgsz=640)
-        
-        for result in resultsPlates.xyxy[0]:
-            x, y, w, h = map(int, result[:4])
-            roi = frame[y:h, x:w]
 
-            resultsLN = modelLN(roi, imgsz=640)
-            letras_numeros = resultsLN[0].plot()
+        # Accede a un elemento de la lista resultsPlates
+        resultsPlates = resultsPlates[0]
 
-            cv2.imshow("Letters and Numbers", letras_numeros)
+        # Accede al atributo boxes del objeto Results
+        boxes = resultsPlates.boxes
 
-        placas = resultsPlates[0].plot()
+        for box in boxes:
+            # Verifica si el objeto box tiene un atributo xyxy
+            if box.valid:
+                # Obtiene las coordenadas de la detección
+                x, y, w, h = box.xyxy[:4]
 
+                roi = frame[y:h, x:w]
+
+                # Detecta letras y números en la región de interés (ROI)
+                resultsLN = modelLN(roi, imgsz=640)
+                letras_numeros = resultsLN[0].plot()
+
+                cv2.imshow("Letters and Numbers", letras_numeros)
+            else:
+                # El objeto box no es una detección válida
+                x = y = w = h = 0
+                
+        # Dibuja las placas detectadas en la imagen
+        placas = resultsPlates.plot()
         cv2.imshow("Plates", placas)
 
         tecla = cv2.waitKey(1)
